@@ -3,8 +3,10 @@ package burst.apihelper;
 import java.util.Scanner;
 
 import burst.apihelper.framework.*;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,7 @@ import javax.annotation.PostConstruct;
  * Time: 下午4:59
  */
 @Component
-public class Booter {
+public class Booter implements ApplicationContextAware {
 
     @Autowired
     private RequestBuilder requestBuilder;
@@ -30,7 +32,7 @@ public class Booter {
     @PostConstruct
     public void boot() throws Throwable {
         Request request = requestBuilder.build(INIT_ARGS, true);
-        IAction action = APPLICATION_CONTEXT.getBean(request.getPath(), IAction.class);
+        IAction action = findBean(request.getPath());
         if(action != null) {
             Context context = new Context();
             action.execute(request, context);
@@ -41,9 +43,9 @@ public class Booter {
                 System.out.print("> ");
                 String[] args = scanner.nextLine().split(" ");
                 request = requestBuilder.build(args, false);
-                action = APPLICATION_CONTEXT.getBean(request.getPath(), IAction.class);
+                action = findBean(request.getPath());
                 if(action != null) {
-                    Context context = new Context();
+                    Context context = buildContext();
                     action.execute(request, context);
                     if(context.isRequireExit()) {
                         break;
@@ -58,12 +60,33 @@ public class Booter {
         }
     }
 
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    private IAction findBean(String path) {
+        if(path == null) {
+            return null;
+        }
+        try {
+            return applicationContext.getBean(path, IAction.class);
+        } catch (BeansException ex) {
+            return null;
+        }
+    }
+
+    private Context buildContext() {
+        return applicationContext.getBean(Context.class);
+    }
+
     private static String[] INIT_ARGS;
-    private static ApplicationContext APPLICATION_CONTEXT;
     private static final String APPLICATION_CONTEXT_CONFIG_PATH = "config/spring/appcontext.xml";
 
     public static void main(String[] args) {
         INIT_ARGS = args;
-        APPLICATION_CONTEXT = new ClassPathXmlApplicationContext(APPLICATION_CONTEXT_CONFIG_PATH);
+        new ClassPathXmlApplicationContext(APPLICATION_CONTEXT_CONFIG_PATH);
     }
 }
