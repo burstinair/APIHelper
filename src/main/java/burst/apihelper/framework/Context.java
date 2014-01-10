@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +23,7 @@ import java.util.logging.Logger;
 public class Context {
 
     private static final String SETTINGS_LOCATION = "settings.properties";
+    private static final Logger LOGGER = Logger.getLogger("context");
 
     private Properties properties;
 
@@ -33,12 +37,18 @@ public class Context {
     public Context() {
         properties = new Properties();
         try {
-            FileInputStream fileInputStream = new FileInputStream(SETTINGS_LOCATION);
+            String path = URLDecoder.decode(getClass().getProtectionDomain().getCodeSource().getLocation().toString(), "UTF-8");
+            if(path.startsWith("file:/")) {
+                path = path.substring(6);
+            }
+            if(path.endsWith(".jar")) {
+                path = path.substring(0, path.lastIndexOf(File.separator) + 1);
+            }
+            FileInputStream fileInputStream = new FileInputStream(path + SETTINGS_LOCATION);
             properties.load(fileInputStream);
             fileInputStream.close();
         } catch (IOException e) {
-            Logger logger = Logger.getLogger("context");
-            logger.log(Level.WARNING, "load settings failed");
+            LOGGER.log(Level.WARNING, "load settings failed");
         }
     }
 
