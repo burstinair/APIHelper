@@ -41,7 +41,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy todir="${build.directory}" file="${basedir}/settings.properties" />
+                                <copy todir="${build.directory}" file="${basedir}/src/main/resources/settings.properties" />
                             </tasks>
                         </configuration>
                     </execution>
