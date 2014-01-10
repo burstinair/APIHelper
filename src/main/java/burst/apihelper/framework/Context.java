@@ -42,7 +42,11 @@ public class Context {
                 path = path.substring(6);
             }
             if(path.endsWith(".jar")) {
-                path = path.substring(0, path.lastIndexOf(File.separator) + 1);
+                int lastIndex = path.lastIndexOf('/');
+                if(lastIndex == -1) {
+                    lastIndex = path.lastIndexOf('\\');
+                }
+                path = path.substring(0, lastIndex + 1);
             }
             FileInputStream fileInputStream = new FileInputStream(path + SETTINGS_LOCATION);
             properties.load(fileInputStream);
