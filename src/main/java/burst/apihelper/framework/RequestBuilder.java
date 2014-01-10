@@ -23,8 +23,8 @@ public class RequestBuilder {
         List<String> curValues = new ArrayList<String>();
         for(int i = 0; i < args.length; ++i) {
             if(i == 0) {
-                path = args[i];
                 key = StringUtils.trimLeadingCharacter(args[i], '-');
+                path = key;
             } else if(args[i].startsWith("-")) {
                 options.put(key, curValues);
                 key = StringUtils.trimLeadingCharacter(args[i], '-');

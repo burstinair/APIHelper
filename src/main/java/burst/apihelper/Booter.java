@@ -1,5 +1,6 @@
 package burst.apihelper;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import burst.apihelper.framework.*;
@@ -34,14 +35,19 @@ public class Booter implements ApplicationContextAware {
         Request request = requestBuilder.build(INIT_ARGS, true);
         IAction action = findBean(request.getPath());
         if(action != null) {
-            Context context = new Context();
+            Context context = buildContext();
             action.execute(request, context);
             keep(context);
         } else {
             Scanner scanner = new Scanner(System.in);
             while (true) {
                 System.out.print("> ");
-                String[] args = scanner.nextLine().split(" ");
+                String[] args;
+                try {
+                    args = scanner.nextLine().split(" ");
+                } catch (NoSuchElementException ex) {
+                    break;
+                }
                 request = requestBuilder.build(args, false);
                 action = findBean(request.getPath());
                 if(action != null) {
@@ -87,6 +93,7 @@ public class Booter implements ApplicationContextAware {
 
     public static void main(String[] args) {
         INIT_ARGS = args;
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         new ClassPathXmlApplicationContext(APPLICATION_CONTEXT_CONFIG_PATH);
     }
 }
