@@ -13,7 +13,7 @@ public abstract class MultiDealAction implements IAction {
     }
 
     protected String formatErrorMessage(String param, Throwable ex) {
-        return "unValid parameter " + param;
+        return "Error with parameter " + param;
     }
 
     @Override
