@@ -15,56 +15,53 @@ import java.util.Date;
 @Service
 public class TokenService {
 
+    private static final String TRANSFORMATION = "AES/CBC/NoPadding";
+    private static final String ALGORITHM = "AES";
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     private byte[] process(byte[] bytes, int mode) throws Throwable {
-        Cipher cipher = Cipher.getInstance(NOPADDING_TRANSFORMATION);
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         byte[] keyBytes = TOKEN_KEY.getBytes(DEFAULT_ENCODING);
         byte[] ivBytes = TOKEN_IV.getBytes(DEFAULT_ENCODING);
         cipher.init(mode, new SecretKeySpec(keyBytes, ALGORITHM), new IvParameterSpec(ivBytes));
         return cipher.doFinal(bytes);
     }
 
-    private static final String NOPADDING_TRANSFORMATION = "AES/CBC/NoPadding";
-    private static final String ALGORITHM = "AES";
     private static final String KEY = "D7C6F71A12153EE5";
     private static final String IV = "55C930D827BDABFD";
     private static final String TOKEN_KEY = "55C930D827BDABFD";
     private static final String TOKEN_IV = "D7C6F71A12153EE5";
 
     private byte[] decrypt(byte[] bytes) throws Throwable {
-        byte[] decrBuffer = this.process(bytes, Cipher.DECRYPT_MODE);
+        byte[] decBuffer = this.process(bytes, Cipher.DECRYPT_MODE);
         int blank = 0;
-        for (int i = decrBuffer.length - 1; i >= 0; i--) {
-            if (decrBuffer[i] == '\0') {
+        for (int i = decBuffer.length - 1; i >= 0; i--) {
+            if (decBuffer[i] == '\0') {
                 blank++;
             } else {
                 break;
             }
         }
-        byte[] result = decrBuffer;
+        byte[] result = decBuffer;
         if (blank > 0) {
-            byte[] decrBytes = new byte[decrBuffer.length - blank];
-            System.arraycopy(decrBuffer, 0, decrBytes, 0, decrBytes.length);
-            result = decrBytes;
+            byte[] decBytes = new byte[decBuffer.length - blank];
+            System.arraycopy(decBuffer, 0, decBytes, 0, decBytes.length);
+            result = decBytes;
         }
         return result;
     }
 
     private byte[] encrypt(byte[] bytes) throws Throwable {
-        byte[] pbytes;
+        byte[] pBytes;
         if (bytes.length % 16 == 0) {
-            pbytes = bytes;
+            pBytes = bytes;
         } else {
-            pbytes = new byte[bytes.length + (16 - bytes.length % 16)];
-            System.arraycopy(bytes, 0, pbytes, 0, bytes.length);
+            pBytes = new byte[bytes.length + (16 - bytes.length % 16)];
+            System.arraycopy(bytes, 0, pBytes, 0, bytes.length);
         }
 
-        return this.process(pbytes, Cipher.ENCRYPT_MODE);
+        return this.process(pBytes, Cipher.ENCRYPT_MODE);
     }
-
-    private static final String TOKEN_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String TOKEN_ENCODING = "UTF-8";
 
     private static String toHexString(byte[] byteArray) {
         StringBuilder md5StrBuff = new StringBuilder();
@@ -98,6 +95,9 @@ public class TokenService {
         }
     }
 
+    private static final String TOKEN_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String TOKEN_ENCODING = "UTF-8";
+
     public int parseToken(String token) throws Throwable {
         byte[] bytes = fromHexString(token);
         byte[] data = decrypt(bytes);
@@ -107,7 +107,7 @@ public class TokenService {
     }
 
     public String createToken(int userId) throws Throwable {
-        Date now = new Date(System.currentTimeMillis());
+        Date now = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat(TOKEN_TIME_FORMAT);
         String token = Integer.toString(userId) + "|" + formatter.format(now);
         byte[] before = token.getBytes(TOKEN_ENCODING);
