@@ -32,6 +32,8 @@ public class Context {
 
     private boolean requireExit;
 
+    private boolean pauseToShowResult;
+
     private boolean keepAlive;
 
     public Context() {
@@ -74,6 +76,14 @@ public class Context {
 
     public void setRequireExit(boolean requireExit) {
         this.requireExit = requireExit;
+    }
+
+    public boolean isPauseToShowResult() {
+        return pauseToShowResult;
+    }
+
+    public void setPauseToShowResult(boolean pauseToShowResult) {
+        this.pauseToShowResult = pauseToShowResult;
     }
 
     public boolean isKeepAlive() {

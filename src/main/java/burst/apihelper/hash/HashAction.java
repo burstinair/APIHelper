@@ -19,9 +19,12 @@ public class HashAction implements IAction {
     @Override
     public void execute(Request request, Context context) throws Throwable {
         String word = request.getOption("hash");
-        if(request.isInit()) {
+        if(request.isInit() && !request.isSilence()) {
             context.getPrinter().printWithNewLine("Hash of " + word);
         }
         context.getPrinter().printWithNewLine(hashService.hashToHex(word));
+        if(!request.isSilence()) {
+            context.setPauseToShowResult(true);
+        }
     }
 }

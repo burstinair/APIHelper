@@ -15,11 +15,14 @@ public class Request {
 
     private boolean init;
 
+    private boolean silence;
+
     public Request() { }
-    public Request(Map<String, List<String>> rawMap, String path, boolean init) {
+    public Request(Map<String, List<String>> rawMap, String path, boolean init, boolean silence) {
         this.options = rawMap;
         this.path = path;
         this.init = init;
+        this.silence = silence;
     }
 
     public Map<String, List<String>> getOptions() {
@@ -46,5 +49,9 @@ public class Request {
 
     public boolean isInit() {
         return init;
+    }
+
+    public boolean isSilence() {
+        return silence;
     }
 }

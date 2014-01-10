@@ -19,10 +19,16 @@ public class CreateTokenAction implements IAction {
     @Override
     public void execute(Request request, Context context) throws Throwable {
         try {
-            String token = tokenService.createToken(Integer.parseInt(request.getOption("ct")));
-            context.getPrinter().printWithNewLine(token);
+            int userId = Integer.parseInt(request.getOption("ct"));
+            if(request.isInit() && !request.isSilence()) {
+                context.getPrinter().printWithNewLine("Create token of " + userId);
+            }
+            context.getPrinter().printWithNewLine(tokenService.createToken(userId));
         } catch (Throwable ex) {
             context.getPrinter().printWithNewLine("unValid userId");
+        }
+        if(!request.isSilence()) {
+            context.setPauseToShowResult(true);
         }
     }
 }

@@ -32,12 +32,19 @@ public class Booter implements ApplicationContextAware {
 
     @PostConstruct
     public void boot() throws Throwable {
-        Request request = requestBuilder.build(INIT_ARGS, true);
-        IAction action = findBean(request.getPath());
-        if(action != null) {
-            Context context = buildContext();
-            action.execute(request, context);
-            keep(context);
+        if(INIT_ARGS.length > 0) {
+            Request request = requestBuilder.build(INIT_ARGS, true);
+            IAction action = findBean(request.getPath());
+            if(action != null) {
+                Context context = buildContext();
+                action.execute(request, context);
+                keep(context);
+                if(context.isPauseToShowResult()) {
+                    System.console().readLine();
+                }
+            } else {
+                System.out.println("Unknown command.");
+            }
         } else {
             Scanner scanner = new Scanner(System.in);
             while (true) {
@@ -48,8 +55,8 @@ public class Booter implements ApplicationContextAware {
                 } catch (NoSuchElementException ex) {
                     break;
                 }
-                request = requestBuilder.build(args, false);
-                action = findBean(request.getPath());
+                Request request = requestBuilder.build(args, false);
+                IAction action = findBean(request.getPath());
                 if(action != null) {
                     Context context = buildContext();
                     action.execute(request, context);

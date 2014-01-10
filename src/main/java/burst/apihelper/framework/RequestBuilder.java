@@ -18,6 +18,7 @@ public class RequestBuilder {
     public Request build(String[] args, boolean init) {
         Map<String, List<String>> options = new HashMap<String, List<String>>();
         String path = null;
+        boolean silence = false;
 
         String key = null;
         List<String> curValues = new ArrayList<String>();
@@ -26,13 +27,18 @@ public class RequestBuilder {
                 key = StringUtils.trimLeadingCharacter(args[i], '-');
                 path = key;
             } else if(args[i].startsWith("-")) {
-                options.put(key, curValues);
-                key = StringUtils.trimLeadingCharacter(args[i], '-');
+                if("-sil".equalsIgnoreCase(args[i]) || "-silence".equalsIgnoreCase(args[i])) {
+                    silence = true;
+                } else {
+                    options.put(key, curValues);
+                    curValues = new ArrayList<String>();
+                    key = StringUtils.trimLeadingCharacter(args[i], '-');
+                }
             } else {
                 curValues.add(args[i]);
             }
         }
         options.put(key, curValues);
-        return new Request(options, path, init);
+        return new Request(options, path, init, silence);
     }
 }
