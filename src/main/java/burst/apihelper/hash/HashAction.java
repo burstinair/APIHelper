@@ -1,8 +1,7 @@
 package burst.apihelper.hash;
 
-import burst.apihelper.framework.*;
+import burst.apihelper.framework.MultiDealAction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -11,21 +10,18 @@ import org.springframework.stereotype.Controller;
  * Time: 下午5:00
  */
 @Controller("hash")
-public class HashAction implements IAction {
+public class HashAction extends MultiDealAction {
 
     @Autowired
     private HashService hashService;
 
     @Override
-    public void execute(Request request, Context context) throws Throwable {
-        for(String word : request.getOptions("hash")) {
-            if(request.isInit() && !request.isSilence()) {
-                context.getPrinter().printWithNewLine("Hash of " + word);
-            }
-            context.getPrinter().printWithNewLine(hashService.hashToHex(word));
-        }
-        if(!request.isSilence()) {
-            context.setPauseToShowResult(true);
-        }
+    protected String formatMessage(String param) {
+        return "Hash of " + param;
+    }
+
+    @Override
+    protected Object deal(String param) throws Throwable {
+        return hashService.hashToHex(param);
     }
 }

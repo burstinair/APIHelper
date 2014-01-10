@@ -1,8 +1,6 @@
 package burst.apihelper.token;
 
-import burst.apihelper.framework.Context;
-import burst.apihelper.framework.IAction;
-import burst.apihelper.framework.Request;
+import burst.apihelper.framework.MultiDealAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -11,26 +9,18 @@ import org.springframework.stereotype.Controller;
  *         14-1-10 上午11:50
  */
 @Controller("ct")
-public class CreateTokenAction implements IAction {
+public class CreateTokenAction extends MultiDealAction {
 
     @Autowired
     private TokenService tokenService;
 
     @Override
-    public void execute(Request request, Context context) throws Throwable {
-        for(String rawUserId : request.getOptions("ct")) {
-            try {
-                int userId = Integer.parseInt(rawUserId);
-                if(request.isInit() && !request.isSilence()) {
-                    context.getPrinter().printWithNewLine("Create token of " + userId);
-                }
-                context.getPrinter().printWithNewLine(tokenService.createToken(userId));
-            } catch (Throwable ex) {
-                context.getPrinter().printWithNewLine("unValid userId");
-            }
-        }
-        if(!request.isSilence()) {
-            context.setPauseToShowResult(true);
-        }
+    protected String formatMessage(String param) {
+        return "Create token of " + param;
+    }
+
+    @Override
+    protected Object deal(String param) throws Throwable {
+        return tokenService.createToken(Integer.parseInt(param));
     }
 }
