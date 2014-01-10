@@ -18,14 +18,15 @@ public class ParseTokenAction implements IAction {
 
     @Override
     public void execute(Request request, Context context) throws Throwable {
-        try {
-            String token = request.getOption("pt");
-            if(request.isInit()) {
-                context.getPrinter().printWithNewLine("Parse token of " + token);
+        for(String token : request.getOptions("pt")) {
+            try {
+                if(request.isInit()) {
+                    context.getPrinter().printWithNewLine("Parse token of " + token);
+                }
+                context.getPrinter().printWithNewLine(Integer.toString(tokenService.parseToken(token)));
+            } catch (Throwable ex) {
+                context.getPrinter().printWithNewLine("inValid token");
             }
-            context.getPrinter().printWithNewLine(Integer.toString(tokenService.parseToken(token)));
-        } catch (Throwable ex) {
-            context.getPrinter().printWithNewLine("inValid token");
         }
         if(!request.isSilence()) {
             context.setPauseToShowResult(true);
