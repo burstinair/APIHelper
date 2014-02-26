@@ -15,7 +15,7 @@ public class CreateTokenAction extends MultiDealAction {
     private TokenService tokenService;
 
     @Override
-    protected String formatMessage(String param) {
+    protected String formatMessage(String param, boolean isDefault) {
         return "Create token of " + param;
     }
 

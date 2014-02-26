@@ -15,7 +15,7 @@ public class ParseTokenAction extends MultiDealAction {
     private TokenService tokenService;
 
     @Override
-    protected String formatMessage(String param) {
+    protected String formatMessage(String param, boolean isDefault) {
         return "Parse token " + param;
     }
 

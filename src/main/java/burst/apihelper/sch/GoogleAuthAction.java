@@ -20,6 +20,15 @@ public class GoogleAuthAction extends MultiDealAction {
     private TotService totService;
 
     @Override
+    protected String formatMessage(String param, boolean isDefault) {
+        if(isDefault) {
+            return "Calculating pass code for default secret...";
+        } else {
+            return "Calculating pass code for secret " + param;
+        }
+    }
+
+    @Override
     protected Object deal(String param) throws Throwable {
         return totService.calcCodeAsString(param);
     }

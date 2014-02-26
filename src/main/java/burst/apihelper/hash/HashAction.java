@@ -16,7 +16,7 @@ public class HashAction extends MultiDealAction {
     private HashService hashService;
 
     @Override
-    protected String formatMessage(String param) {
+    protected String formatMessage(String param, boolean isDefault) {
         return "Hash of " + param;
     }
 
